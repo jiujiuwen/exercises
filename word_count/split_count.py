@@ -4,12 +4,12 @@ import sys
 file = sys.argv[1]
 
 def word_split(s):
-    if s in ".,!" or s.isspace(): #空格和标点符号
+    if s in ".,!?;:\"(){}[]" or s.isspace(): #空格和标点符号
         return True
 
 def is_letter(word):
     try:
-        if word.isalpha():  # 整数没有isalpha类型
+        if word.isalpha() or word in "'":  # 整数没有isalpha类型
             return True
     except Exception as e:
         return False

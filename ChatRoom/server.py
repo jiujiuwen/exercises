@@ -8,7 +8,7 @@ import threading
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.bind(('127.0.0.1',9990))
 s.listen(5)
-print("<ChartRoom>")
+print("<ChartRoom Server>")
 
 global client_list
 client_list = []
@@ -24,9 +24,9 @@ class SingleServer:
             s.send(msg)
 
     def get_msg(self):
-        Id = "%s:%s" % self.addr
-        self.broadcast_msg(self.sock, "%s Come in." % Id) #广播客户端
-        print("%s Come in." % Id) #server端显示
+        Id = "%s<%s>" % self.addr
+        self.broadcast_msg(self.sock, "Information:%s Come in." % Id) #广播客户端
+        print("Information:%s Come in." % Id) #server端显示
         self.sock.send("Welcome!You're %s" % Id)
         client_list.append(self.sock)
 
@@ -35,14 +35,13 @@ class SingleServer:
             msg = "{ip}<{port}>:{msg}".format(ip=self.addr[0],port=self.addr[1],msg=data)
             print(msg)
             if data == 'exit':
+                client_list.remove(self.sock)
+                self.broadcast_msg(self.sock, "Information:%s<%s> exited." % self.addr)
+                self.sock.close()
+                print("Information:%s<%s> exited." % self.addr)
                 break
             self.broadcast_msg(self.sock,msg)
             #self.sock.send(msg)
-        self.sock.close()
-        self.broadcast_msg(self.sock, "Connection from %s:%s closed." % self.addr)
-        print("Connection from %s:%s closed." % self.addr)
-        #return msg
-
 
 class ChatServer:
     def __init__(self):

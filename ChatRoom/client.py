@@ -22,19 +22,23 @@ class ChatClient:
         while 1:
             msg = raw_input()
             self.sock.sendall(msg)
-            #print(self.sock.recv(1024).decode('utf-8'))
             if msg == "exit":
-                sys.exit()
+                self.sock.close()
+                break
 
     def receive(self):
         while 1:
-            all_msg = self.sock.recv(1024)
-            ip_port = all_msg.split(":")[0]
-            msg = all_msg.split(":")[-1]
+            try:
+                all_msg = self.sock.recv(1024)
+            except Exception:
+                self.sock.close()
+                break
+            else:
+                ip_port = all_msg.split(":")[0]
+                msg = all_msg.split(":")[-1]
+                if msg: #空信息不打印
+                    print("{ip_port}:{msg}".format(ip_port=ip_port,msg=msg))
 
-            print("{ip_port}:{msg}".format(ip_port=ip_port,msg=msg))
-            if msg == "exit":
-                sys.exit()
 
 client= ChatClient(s)
 #reveive ID information

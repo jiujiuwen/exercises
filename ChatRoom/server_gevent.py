@@ -54,7 +54,7 @@ class SMsgHandler:
     def local_print(self, msg):  # msg 发送的内容
         print("{prefix}:{msg}".format(prefix=self.prefix_info, msg=msg))
 
-    def revieve(self, msg):
+    def when_receive(self, msg):
         # if msg:
         self.local_print(msg)
         self.broadcast_msg(msg)
@@ -73,7 +73,7 @@ class ChatServer(SMsgHandler):
     def add_client(self):
         client_num = self.client_obj.get_num() + 1
         self.sock.send("{} TOTAL {}.".format(self.welcome_info, client_num))
-        SMsgHandler.revieve(
+        SMsgHandler.when_receive(
             self, "{} TOTAL {}.".format(
                 self.in_info, client_num))  # 本地打印 + 广播
         self.client_obj.add(self.sock)
@@ -81,16 +81,16 @@ class ChatServer(SMsgHandler):
     def run(self):
         while True:
             data = self.sock.recv(1024)
-            #MsgHandler.revieve(self, data)
+            #SMsgHandler.revieve(self, data)
             if data == "exit":
                 client_num = self.client_obj.get_num() - 1
-                SMsgHandler.revieve(
+                SMsgHandler.when_receive(
                     self, "{} {} LEFT.".format(
                         self.out_info, client_num))
                 self.client_obj.remove(self.sock)  # recieve 之后remove
                 self.sock.close()
                 break
-            SMsgHandler.revieve(self, data)  # exit不发送
+            SMsgHandler.when_receive(self, data)  # exit不发送
 
 
 def handler(sock, addr):
@@ -112,5 +112,3 @@ if __name__ == "__main__":
     except Exception as e:
         print("start server ERROR . {}".format(e))
         sys.exit()
-
-
